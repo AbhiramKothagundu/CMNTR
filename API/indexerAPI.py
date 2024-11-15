@@ -1,10 +1,10 @@
-
 import os
 import torch
 import random
 import numpy as np
 from dotenv import load_dotenv
 from transformers import BertTokenizer, BertModel
+from note_system import MultilingualNoteSystem
 from sklearn.metrics.pairwise import cosine_similarity
 import sys
 sys.path.append(os.path.abspath('../API/inputProcesser'))
@@ -12,6 +12,9 @@ sys.path.append(os.path.abspath('../API/inputProcesser'))
 
 # Now import the function
 from TenglishFormatter import process_user_input
+
+note_system = MultilingualNoteSystem(NOTES_DIRECTORY, EMBEDDINGS_DIRECTORY)
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -69,6 +72,8 @@ def editNote(fileName, inputText):
     # Overwrite the existing content with new text
     with open(file_path, 'w') as file:
         file.write(processed_text)  # Writes the input text to the file
+
+    note_system.process_note(processed_text)
 
     print(f"File '{fileName}.txt' edited with new content.")
 

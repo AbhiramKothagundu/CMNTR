@@ -3,6 +3,7 @@ import os
 import torch
 import numpy as np
 from transformers import BertTokenizer, BertModel
+from note_system import MultilingualNoteSystem
 from sklearn.metrics.pairwise import cosine_similarity
 
 import sys
@@ -11,6 +12,7 @@ sys.path.append(os.path.abspath('../API/inputProcesser'))
 
 # Now import the function
 from TenglishFormatter import process_user_input
+
 
 # Set random seed for reproducibility
 random_seed = 42
@@ -25,7 +27,9 @@ model = BertModel.from_pretrained('bert-base-multilingual-cased')
 load_dotenv()
 NOTES_DIRECTORY = os.getenv("NOTES_DIRECTORY")
 EMBEDDINGS_DIRECTORY = os.getenv("EMBEDDINGS_DIRECTORY")
-# Path where embeddings are stored
+
+
+note_system = MultilingualNoteSystem(NOTES_DIRECTORY, EMBEDDINGS_DIRECTORY)
 
 
 # Function to compute the embedding of a document or query
@@ -64,40 +68,18 @@ def load_embeddings():
 
     return embeddings
 
-# Function to find the top 3 most similar documents based on a query
 def find(query):
+    """Find similar notes using MultilingualNoteSystem"""
+    search_results = note_system.search_notes(query)
     
-    processed_query = process_user_input(query)
-    
-    # Step 2: Compute the embedding for the processed query
-    query_embedding = compute_embedding(processed_query)
-    
-    # Step 2: Load all pre-computed embeddings
-    document_embeddings = load_embeddings()
-
-    # Step 3: Calculate cosine similarity between the query and all documents
-    similarity_scores = {}
-    for doc_name, doc_embedding in document_embeddings.items():
-        similarity = cosine_similarity(doc_embedding, query_embedding)[0][0]
-        similarity_scores[doc_name] = similarity
-
-    # Step 4: Sort the documents by similarity scores in descending order
-    sorted_docs = sorted(similarity_scores.items(), key=lambda item: item[1], reverse=True)
-
-    # Step 5: Retrieve the top 3 matching documents
-    top_3_docs = sorted_docs[:3]
-
-    # Step 6: Retrieve the content of the top 3 documents
+    # Format results for CLI
     results = []
-    for doc_name, similarity in top_3_docs:
-        # Read the document content from the corresponding note file
-        note_path = os.path.join(NOTES_DIRECTORY, f"{doc_name}.txt")
-        if os.path.exists(note_path):
-            with open(note_path, 'r', encoding='utf-8') as file:
-                content = file.read()
-                results.append((doc_name, similarity, content))
-        else:
-            print(f"Note file for '{doc_name}' not found.")
+    for result in search_results:
+        results.append((
+            result['note_id'],
+            result['similarity'],
+            result['text']
+        ))
     
     return results
 

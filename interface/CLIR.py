@@ -64,10 +64,14 @@ def delete(filename):
 def query(query_text):
     """Find the top 3 most similar documents for the QUERY_TEXT."""
     results = find(query_text)
+    
     if results:
         click.echo(f"\nTop 3 results for the query: {query_text}")
         for idx, (doc_name, similarity, content) in enumerate(results):
-            click.echo(f"\nRank {idx + 1}:\nDocument: {doc_name}\nSimilarity: {similarity:.4f}\nContent:\n{content}\n")
+            click.echo(f"\nRank {idx + 1}:")
+            click.echo(f"Document: {doc_name}")
+            click.echo(f"Similarity: {similarity:.4f}")
+            click.echo(f"Content:\n{content}\n")
     else:
         click.echo("No similar documents found.")
 

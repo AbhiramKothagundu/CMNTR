@@ -62,6 +62,6 @@ def process_user_input(user_sentence):
     return final_sentence
 
 # Example usage
-user_sentence = "nenu oka katha chadivanu"  # Example Latin-scripted Telugu sentence
+user_sentence = "nuvvu em annavo i dont know"  # Example Latin-scripted Telugu sentence
 output_sentence = process_user_input(user_sentence)
 logging.info("Processed Sentence: {output_sentence}")
