@@ -1,0 +1,1 @@
+Machine learning అల్గొరిథ్మ్స can detect పటెర్న్స in data .

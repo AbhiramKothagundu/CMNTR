@@ -1,0 +1,1 @@
+Speech recognition స్య్స్తెమ్స convert spoken language into text .

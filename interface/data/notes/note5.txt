@@ -1,0 +1,1 @@
+Deep learning మొదెల్స require significant computational power .
