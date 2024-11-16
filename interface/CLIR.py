@@ -273,19 +273,14 @@ def check_notes():
         click.echo(click.style(f"✗ Error checking notes: {str(e)}", fg='red'))
 
 
-
 @cli.command()
 @click.argument('context')
 @click.option('--top-k', '-k', default=3, help='Number of predictions to return')
 def predict(context, top_k):
     """Predict next words based on context."""
     try:
-        # Train the model if not already trained
-        if predictor.vocab is None:
-            click.echo(click.style("Training word prediction model...", fg='yellow'))
-            predictor.train(notes_dir)
-        
-        predictions = predictor.predict_next_word(context, top_k)
+        predictor = WordPredictAPI()
+        predictions = predictor.predict(context, top_k)
         
         if not predictions:
             click.echo(click.style("No predictions available.", fg='yellow'))
@@ -296,11 +291,16 @@ def predict(context, top_k):
         click.echo("=" * 40)
         
         for word, score in predictions:
-            click.echo(click.style(f"- {word}: ", fg='green') + 
+            is_english = all(ord(c) < 128 for c in word)
+            word_color = 'green' if is_english else 'magenta'
+            
+            click.echo(click.style(f"- {word}: ", fg=word_color) + 
                       click.style(f"{score:.4f}", fg='white'))
                       
     except Exception as e:
         click.echo(click.style(f"✗ Error during prediction: {str(e)}", fg='red'))
+
+
 
 @cli.command()
 def train_predictor():
